@@ -11,13 +11,13 @@ import { baseUrl } from "./sitemap";
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Daniel Bolivar",
-    template: "%s | Personal Site",
+    default: "Home | Daniel Bolivar",
+    template: "%s | Daniel Bolivar",
   },
-  description: "This is my personal site.",
+  description: "My personal site and portfolio.",
   openGraph: {
     title: "Daniel Bolivar",
-    description: "This is my personal site.",
+    description: "My personal site and portfolio.",
     url: baseUrl,
     siteName: "My Personal Site",
     locale: "en_US",
