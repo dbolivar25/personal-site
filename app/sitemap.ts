@@ -1,6 +1,6 @@
 import { getProjects } from "app/portfolio/utils";
 
-export const baseUrl = "https://portfolio-blog-starter.vercel.app";
+export const baseUrl = "https://danielbolivar.vercel.app";
 
 export default async function sitemap() {
   let projects = getProjects().map((project) => ({
