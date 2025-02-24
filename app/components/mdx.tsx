@@ -1,109 +1,134 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { MDXRemote } from 'next-mdx-remote/rsc'
-import { highlight } from 'sugar-high'
-import React from 'react'
+import Link from "next/link";
+import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import { highlight } from "sugar-high";
+import React from "react";
 
-function Table({ data }) {
-  let headers = data.headers.map((header, index) => (
-    <th key={index}>{header}</th>
-  ))
-  let rows = data.rows.map((row, index) => (
-    <tr key={index}>
-      {row.map((cell, cellIndex) => (
-        <td key={cellIndex}>{cell}</td>
-      ))}
-    </tr>
-  ))
-
-  return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
-  )
-}
-
-function CustomLink(props) {
-  let href = props.href
-
-  if (href.startsWith('/')) {
-    return (
-      <Link href={href} {...props}>
-        {props.children}
-      </Link>
-    )
-  }
-
-  if (href.startsWith('#')) {
-    return <a {...props} />
-  }
-
-  return <a target="_blank" rel="noopener noreferrer" {...props} />
-}
-
-function RoundedImage(props) {
-  return <Image alt={props.alt} className="rounded-lg" {...props} />
-}
-
-function Code({ children, ...props }) {
-  let codeHTML = highlight(children)
-  return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
-}
-
-function slugify(str) {
+function slugify(str: string): string {
   return str
     .toString()
     .toLowerCase()
-    .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "-and-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 }
 
-function createHeading(level) {
-  const Heading = ({ children }) => {
-    let slug = slugify(children)
-    return React.createElement(
-      `h${level}`,
-      { id: slug },
-      [
-        React.createElement('a', {
-          href: `#${slug}`,
-          key: `link-${slug}`,
-          className: 'anchor',
-        }),
-      ],
-      children
-    )
-  }
-
-  Heading.displayName = `Heading${level}`
-
-  return Heading
+interface CustomMarkdownProps {
+  content: string;
 }
 
-let components = {
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
-  Image: RoundedImage,
-  a: CustomLink,
-  code: Code,
-  Table,
-}
+export function CustomMarkdown({ content }: CustomMarkdownProps) {
+  const components = {
+    // Wrapper div
+    div: ({ children }) => (
+      <div className="markdown-content prose dark:prose-invert max-w-none">
+        {children}
+      </div>
+    ),
+    // Handle headers with anchor links
+    h1: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h1 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h2 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h3 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h3>
+      );
+    },
+    h4: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h4 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h4>
+      );
+    },
+    h5: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h5 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h5>
+      );
+    },
+    h6: ({ children }) => {
+      const slug = slugify(String(children));
+      return (
+        <h6 id={slug}>
+          <a href={`#${slug}`} className="anchor" />
+          {children}
+        </h6>
+      );
+    },
+    // Handle links
+    a: ({ href, children }) => {
+      if (!href) return null;
 
-export function CustomMDX(props) {
-  return (
-    <MDXRemote
-      {...props}
-      components={{ ...components, ...(props.components || {}) }}
-    />
-  )
+      if (href.startsWith("/")) {
+        return <Link href={href}>{children}</Link>;
+      }
+
+      if (href.startsWith("#")) {
+        return <a href={href}>{children}</a>;
+      }
+
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
+    },
+    // Handle images
+    img: ({ src, alt }) => {
+      if (!src) return null;
+
+      // For external images, use a placeholder or default size
+      // You might want to adjust these values based on your needs
+      return (
+        <Image
+          src={src}
+          alt={alt || ""}
+          width={800}
+          height={400}
+          className="rounded-lg"
+        />
+      );
+    },
+    // Handle code blocks with syntax highlighting
+    code: ({ className, children }) => {
+      const language = className ? className.replace("language-", "") : "";
+      const highlightedCode = highlight(String(children));
+
+      return (
+        <code
+          className={className}
+          dangerouslySetInnerHTML={{ __html: highlightedCode }}
+        />
+      );
+    },
+  };
+
+  return <ReactMarkdown components={components}>{content}</ReactMarkdown>;
 }
