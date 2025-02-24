@@ -1,0 +1,48 @@
+---
+title: "Redis Implementation"
+publishedAt: "2024-12-05"
+summary:
+  "A fully-functional Redis server and client implemented in Rust with an
+  actor-based event loop architecture"
+---
+
+## Redis Implementation
+
+A complete Redis server and client implementation built in Rust with a focus on
+performance and reliability.
+
+### Key Features
+
+- **Actor-based Event Loop Architecture**: Designed for efficient concurrent
+  operations and resource management
+- **Core Redis Commands**: Implemented the fundamental Redis command set,
+  allowing for drop-in compatibility with existing Redis applications
+- **Key Expiration**: Built-in time-based key expiration mechanism
+- **Master-Replica Replication**: Support for Redis replication topology to
+  ensure data reliability and availability
+- **RESP3 Protocol**: Full implementation of the Redis RESP3 wire protocol for
+  client-server communication
+- **Concurrent Client Connections**: Robust handling of multiple simultaneous
+  client connections
+
+### Client Interfaces
+
+- **Command Line Interface (CLI)**: Traditional terminal-based client for direct
+  Redis operations
+- **Text User Interface (TUI)**: Interactive terminal UI for more intuitive
+  Redis management
+- **Connection Management System**:
+  - Atomic operations support
+  - Failover capabilities for high availability
+  - Comprehensive logging system
+
+### Technical Stack
+
+- **Language**: Rust
+- **Architecture Pattern**: Actor model
+- **Protocol**: RESP3 (Redis Serialization Protocol)
+- **Repository**:
+  [github.com/dbolivar25/redis](https://github.com/dbolivar25/redis)
+
+The implementation includes full consideration for performance, scalability, and
+reliability requirements expected in production-grade distributed systems.

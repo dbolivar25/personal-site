@@ -1,0 +1,50 @@
+---
+title: "Audio Analysis Pipeline"
+publishedAt: "2024-12-11"
+summary:
+  "A serverless audio processing solution using AWS Lambda, Step Functions, and
+  Bedrock for semantic chunking and recursive analysis"
+---
+
+## Audio Analysis Pipeline
+
+A comprehensive serverless audio processing solution called "Distiller" that
+transforms spoken content into structured, analyzed data using AWS cloud
+services and advanced NLP techniques.
+
+### Key Features
+
+- **Serverless Architecture**: Built on AWS Lambda and Step Functions for
+  scalable, on-demand processing
+- **Semantic Chunking**: Intelligent segmentation of audio content based on
+  semantic meaning
+- **Recursive Analysis**: Multi-level processing of audio content to extract
+  deeper insights
+- **Advanced NLP Capabilities**:
+  - Sentiment analysis using AWS Comprehend
+  - AI-powered summarization using Claude via AWS Bedrock
+  - Entity recognition and relationship mapping
+
+### CLI Tool
+
+The project includes a companion command-line interface in Rust that provides:
+
+- **Seamless AWS Service Interactions**: Simplified management of complex AWS
+  service integrations
+- **File Upload Management**: Efficient handling of audio file uploads to the
+  processing pipeline
+- **Pipeline Execution Control**: Start, monitor, and manage audio processing
+  jobs
+- **Error Handling**: Robust error recovery and reporting
+- **Progress Tracking**: Real-time visibility into processing status
+
+### Technical Stack
+
+- **Cloud Services**: AWS Lambda, Step Functions, Bedrock, Comprehend
+- **Languages**: Rust (CLI), Python (Lambda functions)
+- **AI Models**: Claude (for summarization)
+- **Repository**:
+  [github.com/dbolivar25/distiller](https://github.com/dbolivar25/distiller)
+
+The solution implements a cloud-native architecture with advanced AI/ML
+capabilities while providing straightforward interfaces for developers.

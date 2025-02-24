@@ -1,0 +1,90 @@
+---
+title: "Custom Language Interpreter"
+publishedAt: "2025-01-01"
+summary:
+  "A dynamic programming language interpreter with a focus on simplicity and
+  extensibility"
+---
+
+## rlox2
+
+A dynamic programming language interpreter implemented in Rust. The language
+features lexical scoping, first-class functions, closures, and a comprehensive
+standard library.
+
+### Key Features
+
+- **Dynamic Typing System**: Support for numbers, strings, booleans, lists, and
+  functions
+- **Lexical Scoping**: Proper closure support and block expressions
+- **Expression-Oriented Design**: Blocks evaluate to their last expression
+- **First-Class Functions**: Functions as values with closure capabilities
+- **Rich Standard Library**:
+  - I/O operations
+  - Math functions and utilities
+  - List manipulation
+  - String processing
+- **Interactive REPL**:
+  - Syntax highlighting
+  - Command history
+  - Multiline editing
+- **Error Handling**: Colorful formatting with precise location reporting
+
+### Language Highlights
+
+#### Block Expressions
+
+```rust
+// Block evaluating to 30
+let result = {
+    let x = 10;     // Semicolon required
+    let y = 20;     // Semicolon required
+    x + y           // Last expression, no semicolon needed
+};
+```
+
+#### Functions and Closures
+
+```rust
+// Recursive function using 'rec'
+let rec fibonacci = fn(n) {
+    if n <= 1 {
+        n
+    } else {
+        fibonacci(n - 1) + fibonacci(n - 2)
+    }
+};
+
+// Closure example
+let make_counter = {
+    let count = 0;
+    fn() {
+        println(count);     // Semicolon required
+        count = count + 1   // Last expression
+    }
+};
+```
+
+#### Rich Built-in Operations
+
+- **List Operations**: Length, indexing, slicing, concatenation
+- **Math Functions**: Square root, random number generation, rounding
+- **String Operations**: Split, trim, replace, concatenation
+
+### Implementation Details
+
+- **Parser**: Recursive descent parser with error recovery
+- **Interpreter**: Tree-walk interpreter with environment model
+- **Error Handling**: Detailed error messages with source location information
+
+### Usage Modes
+
+- **File Execution**: `rlox2 run path/to/script.rlox`
+- **Interactive REPL**: `rlox2 repl`
+- **Syntax Checking**: `rlox2 check path/to/script.rlox`
+
+### Technical Stack
+
+- **Language**: Rust
+- **Repository**:
+  [github.com/dbolivar25/rlox2](https://github.com/dbolivar25/rlox2)

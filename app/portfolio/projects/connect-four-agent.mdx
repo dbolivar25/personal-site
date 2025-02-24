@@ -1,0 +1,52 @@
+---
+title: "Connect 4 AI Agent"
+publishedAt: "2024-12-07"
+summary:
+  "An advanced Connect 4 AI combining Negamax search with alpha-beta pruning and
+  Monte Carlo methods"
+---
+
+## Connect 4 AI Agent
+
+An artificial intelligence system for playing Connect 4 that combines
+traditional game tree search algorithms with machine learning techniques.
+
+### Key Features
+
+- **Hybrid AI Approach**: Combined deterministic search algorithms with
+  probabilistic methods
+
+  - Negamax search with alpha-beta pruning for efficient position evaluation
+  - Monte Carlo methods for positions beyond training data
+
+- **Phase-based Evaluation Strategy**:
+
+  - Early game: Machine learning based evaluation
+  - Mid/late game: Transition to Monte Carlo rollouts as positions diverge from
+    training data
+  - Endgame: Perfect play through exhaustive search when computationally
+    feasible
+
+- **Position Classifier**:
+
+  - 90% accuracy using histogram gradient boosting
+  - Trained on the UCI Connect 4 dataset
+  - Evaluates board positions based on win probability
+
+- **Optimized Implementation**:
+  - Game state representation using NumPy arrays
+  - Efficient move generation and win detection algorithms
+  - Performance-focused implementation for fast decision making
+
+### Technical Stack
+
+- **Languages**: Python
+- **Libraries**: NumPy, scikit-learn
+- **Algorithms**: Negamax with alpha-beta pruning, Monte Carlo Tree Search
+- **ML Model**: Histogram Gradient Boosting Classifier
+- **Dataset**: UCI Connect 4
+- **Repository**:
+  [github.com/dbolivar25/connect4-agent](https://github.com/dbolivar25/connect4-agent)
+
+The system effectively integrates classical algorithms with machine learning to
+create an agent that adapts to different game situations.
