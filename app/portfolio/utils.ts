@@ -1,90 +1,188 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
 
-type Metadata = {
+export interface ProjectMetadata {
   title: string;
   publishedAt: string;
   summary: string;
   image?: string;
-};
-
-function parseFrontmatter(fileContent: string) {
-  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
-  let match = frontmatterRegex.exec(fileContent);
-  let frontMatterBlock = match![1];
-  let content = fileContent.replace(frontmatterRegex, "").trim();
-  let frontMatterLines = frontMatterBlock.trim().split("\n");
-  let metadata: Partial<Metadata> = {};
-
-  frontMatterLines.forEach((line) => {
-    let [key, ...valueArr] = line.split(": ");
-    let value = valueArr.join(": ").trim();
-    value = value.replace(/^['"](.*)['"]$/, "$1"); // Remove quotes
-    metadata[key.trim() as keyof Metadata] = value;
-  });
-
-  return { metadata: metadata as Metadata, content };
 }
 
-function getMDXFiles(dir) {
-  return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
+export interface ProjectData {
+  metadata: ProjectMetadata;
+  slug: string;
+  content: string;
 }
 
-function readMDXFile(filePath) {
-  let rawContent = fs.readFileSync(filePath, "utf-8");
-  return parseFrontmatter(rawContent);
+class MDXParseError extends Error {
+  constructor(message: string, public readonly filePath?: string) {
+    super(message);
+    this.name = "MDXParseError";
+  }
 }
 
-function getMDXData(dir) {
-  let mdxFiles = getMDXFiles(dir);
-  return mdxFiles.map((file) => {
-    let { metadata, content } = readMDXFile(path.join(dir, file));
-    let slug = path.basename(file, path.extname(file));
-
-    return {
-      metadata,
-      slug,
-      content,
+/**
+ * Parse frontmatter and content from MDX content
+ */
+function parseFrontmatter(fileContent: string): { metadata: ProjectMetadata; content: string } {
+  try {
+    // Use gray-matter for more reliable parsing
+    const { data, content } = matter(fileContent);
+    
+    // Validate required fields
+    if (!data.title || !data.publishedAt || !data.summary) {
+      throw new Error("Missing required frontmatter fields (title, publishedAt, or summary)");
+    }
+    
+    return { 
+      metadata: data as ProjectMetadata, 
+      content 
     };
-  });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new MDXParseError(`Failed to parse frontmatter: ${error.message}`);
+    }
+    throw new MDXParseError("Failed to parse frontmatter: Unknown error");
+  }
 }
 
-export function getProjects() {
-  return getMDXData(path.join(process.cwd(), "app", "portfolio", "projects"));
+/**
+ * Get all MDX files in a directory
+ */
+function getMDXFiles(dir: string): string[] {
+  try {
+    return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
+  } catch (error) {
+    console.error(`Error reading directory ${dir}:`, error);
+    return [];
+  }
 }
 
-export function formatDate(date: string, includeRelative = false) {
-  let currentDate = new Date();
-  if (!date.includes("T")) {
-    date = `${date}T00:00:00`;
+/**
+ * Read and parse an MDX file
+ */
+function readMDXFile(filePath: string): { metadata: ProjectMetadata; content: string } {
+  try {
+    const rawContent = fs.readFileSync(filePath, "utf-8");
+    return parseFrontmatter(rawContent);
+  } catch (error) {
+    if (error instanceof MDXParseError) {
+      throw new MDXParseError(error.message, filePath);
+    }
+    
+    if (error instanceof Error) {
+      throw new Error(`Failed to read MDX file ${filePath}: ${error.message}`);
+    }
+    
+    throw new Error(`Failed to read MDX file ${filePath}: Unknown error`);
   }
-  let targetDate = new Date(date);
+}
 
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth();
-  let daysAgo = currentDate.getDate() - targetDate.getDate();
-
-  let formattedDate = "";
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`;
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`;
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`;
-  } else {
-    formattedDate = "Today";
+/**
+ * Get all MDX data from a directory
+ */
+function getMDXData(dir: string): ProjectData[] {
+  try {
+    const mdxFiles = getMDXFiles(dir);
+    const validProjects: ProjectData[] = [];
+    
+    for (const file of mdxFiles) {
+      try {
+        const filePath = path.join(dir, file);
+        const { metadata, content } = readMDXFile(filePath);
+        const slug = path.basename(file, path.extname(file));
+        
+        validProjects.push({
+          metadata,
+          slug,
+          content,
+        });
+      } catch (error) {
+        console.error(`Skipping file ${file}:`, error);
+        // Continue processing other files even if one fails
+      }
+    }
+    
+    return validProjects;
+  } catch (error) {
+    console.error(`Error getting MDX data from ${dir}:`, error);
+    return []; // Return empty array rather than crashing
   }
+}
 
-  let fullDate = targetDate.toLocaleString("en-us", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  if (!includeRelative) {
-    return fullDate;
+/**
+ * Get all projects
+ */
+export function getProjects(): ProjectData[] {
+  try {
+    return getMDXData(path.join(process.cwd(), "app", "portfolio", "projects"));
+  } catch (error) {
+    console.error("Error getting projects:", error);
+    return []; // Return empty array instead of crashing
   }
+}
 
-  return `${fullDate} (${formattedDate})`;
+/**
+ * Get a specific project by slug
+ */
+export function getProjectBySlug(slug: string): ProjectData | null {
+  try {
+    const projects = getProjects();
+    const project = projects.find((p) => p.slug === slug);
+    return project || null;
+  } catch (error) {
+    console.error(`Error getting project with slug ${slug}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Format a date string
+ */
+export function formatDate(date: string, includeRelative = false): string {
+  try {
+    const currentDate = new Date();
+    
+    // Ensure consistent date format
+    const parsedDate = date.includes("T") 
+      ? new Date(date) 
+      : new Date(`${date}T00:00:00`);
+    
+    // Validate date
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error(`Invalid date: ${date}`);
+    }
+    
+    const yearsAgo = currentDate.getFullYear() - parsedDate.getFullYear();
+    const monthsAgo = currentDate.getMonth() - parsedDate.getMonth();
+    const daysAgo = currentDate.getDate() - parsedDate.getDate();
+
+    let relativeDate = "";
+
+    if (yearsAgo > 0) {
+      relativeDate = `${yearsAgo}y ago`;
+    } else if (monthsAgo > 0) {
+      relativeDate = `${monthsAgo}mo ago`;
+    } else if (daysAgo > 0) {
+      relativeDate = `${daysAgo}d ago`;
+    } else {
+      relativeDate = "Today";
+    }
+
+    const fullDate = parsedDate.toLocaleString("en-us", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    if (!includeRelative) {
+      return fullDate;
+    }
+
+    return `${fullDate} (${relativeDate})`;
+  } catch (error) {
+    console.error(`Error formatting date ${date}:`, error);
+    return date; // Return original string if formatting fails
+  }
 }
