@@ -1,0 +1,164 @@
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import { getCachedProjects, getCachedProjectBySlug } from "./cache";
+
+export interface ProjectMetadata {
+  title: string;
+  publishedAt: string;
+  summary: string;
+  image?: string;
+}
+
+export interface ProjectData {
+  metadata: ProjectMetadata;
+  slug: string;
+  content: string;
+}
+
+class MDXParseError extends Error {
+  constructor(message: string, public readonly filePath?: string) {
+    super(message);
+    this.name = "MDXParseError";
+  }
+}
+
+/**
+ * Parse frontmatter and content from MDX content
+ */
+function parseFrontmatter(fileContent: string): { metadata: ProjectMetadata; content: string } {
+  try {
+    // Use gray-matter for more reliable parsing
+    const { data, content } = matter(fileContent);
+    
+    // Validate required fields
+    if (!data.title || !data.publishedAt || !data.summary) {
+      throw new Error("Missing required frontmatter fields (title, publishedAt, or summary)");
+    }
+    
+    return { 
+      metadata: data as ProjectMetadata, 
+      content 
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new MDXParseError(`Failed to parse frontmatter: ${error.message}`);
+    }
+    throw new MDXParseError("Failed to parse frontmatter: Unknown error");
+  }
+}
+
+/**
+ * Get all MDX files in a directory
+ */
+function getMDXFiles(dir: string): string[] {
+  try {
+    return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
+  } catch (error) {
+    console.error(`Error reading directory ${dir}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Read and parse an MDX file
+ */
+function readMDXFile(filePath: string): { metadata: ProjectMetadata; content: string } {
+  try {
+    const rawContent = fs.readFileSync(filePath, "utf-8");
+    return parseFrontmatter(rawContent);
+  } catch (error) {
+    if (error instanceof MDXParseError) {
+      throw new MDXParseError(error.message, filePath);
+    }
+    
+    if (error instanceof Error) {
+      throw new Error(`Failed to read MDX file ${filePath}: ${error.message}`);
+    }
+    
+    throw new Error(`Failed to read MDX file ${filePath}: Unknown error`);
+  }
+}
+
+/**
+ * Get all MDX data from a directory
+ */
+function getMDXData(dir: string): ProjectData[] {
+  try {
+    const mdxFiles = getMDXFiles(dir);
+    const validProjects: ProjectData[] = [];
+    
+    for (const file of mdxFiles) {
+      try {
+        const filePath = path.join(dir, file);
+        const { metadata, content } = readMDXFile(filePath);
+        const slug = path.basename(file, path.extname(file));
+        
+        validProjects.push({
+          metadata,
+          slug,
+          content,
+        });
+      } catch (error) {
+        console.error(`Skipping file ${file}:`, error);
+        // Continue processing other files even if one fails
+      }
+    }
+    
+    return validProjects;
+  } catch (error) {
+    console.error(`Error getting MDX data from ${dir}:`, error);
+    return []; // Return empty array rather than crashing
+  }
+}
+
+/**
+ * Fetch projects directly without cache
+ */
+function fetchProjects(): ProjectData[] {
+  try {
+    return getMDXData(path.join(process.cwd(), "app", "portfolio", "projects"));
+  } catch (error) {
+    console.error("Error getting projects:", error);
+    return []; // Return empty array instead of crashing
+  }
+}
+
+/**
+ * Get a specific project by slug directly without cache
+ */
+function fetchProjectBySlug(slug: string): ProjectData | null {
+  try {
+    const projects = fetchProjects();
+    const project = projects.find((p) => p.slug === slug);
+    return project || null;
+  } catch (error) {
+    console.error(`Error getting project with slug ${slug}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Get all projects with caching
+ */
+export function getProjects(): ProjectData[] {
+  return getCachedProjects(fetchProjects);
+}
+
+/**
+ * Get a specific project by slug with caching
+ */
+export function getProjectBySlug(slug: string): ProjectData | null {
+  return getCachedProjectBySlug(slug, fetchProjectBySlug);
+}
+
+/**
+ * Sort projects by date
+ */
+export function sortProjectsByDate(projects: ProjectData[]): ProjectData[] {
+  return [...projects].sort((a, b) => {
+    const dateA = new Date(a.metadata.publishedAt);
+    const dateB = new Date(b.metadata.publishedAt);
+    return dateB.getTime() - dateA.getTime();
+  });
+}
