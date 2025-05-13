@@ -1,11 +1,12 @@
 import { Projects } from "app/components/projects";
+import { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Portfolio",
   description: "Check out my projects.",
 };
 
-export default function Page() {
+export default function PortfolioPage(): JSX.Element {
   return (
     <section>
       <h1 className="font-semibold text-2xl mb-8 tracking-tighter">

@@ -14,8 +14,8 @@ function slugify(str: string): string {
     .trim()
     .replace(/\s+/g, "-")
     .replace(/&/g, "-and-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-");
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
 }
 
 interface CustomMarkdownProps {
@@ -151,7 +151,7 @@ interface CodeProps {
 }
 
 const CodeComponent = memo(({ className, children }: CodeProps) => {
-  const language = className ? className.replace("language-", "") : "";
+  // Using the className but not the language value directly
   const highlightedCode = highlight(String(children));
 
   return (
@@ -166,22 +166,29 @@ CodeComponent.displayName = 'CodeComponent';
 // Export the memoized CustomMarkdown component
 export const CustomMarkdown = memo(({ content }: CustomMarkdownProps) => {
   // Memoize the components object to prevent recreation on every render
-  const components = useMemo(() => ({
-    div: ({ children }: { children: React.ReactNode }) => (
-      <div className="markdown-content prose dark:prose-invert max-w-none">
-        {children}
-      </div>
-    ),
-    h1: H1,
-    h2: H2,
-    h3: H3,
-    h4: H4,
-    h5: H5,
-    h6: H6,
-    a: LinkComponent,
-    img: ImageComponent,
-    code: CodeComponent,
-  }), []);
+  const components = useMemo(() => {
+    // Need to type components properly for ReactMarkdown
+    // Using a more specific type would be better, but ReactMarkdown component types are complex
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const customComponents: any = {
+      div: ({ children }: { children: React.ReactNode }) => (
+        <div className="markdown-content prose dark:prose-invert max-w-none">
+          {children}
+        </div>
+      ),
+      h1: H1,
+      h2: H2,
+      h3: H3,
+      h4: H4,
+      h5: H5,
+      h6: H6,
+      a: LinkComponent,
+      img: ImageComponent,
+      code: CodeComponent,
+    };
+    
+    return customComponents;
+  }, []);
 
   return <ReactMarkdown components={components}>{content}</ReactMarkdown>;
 });

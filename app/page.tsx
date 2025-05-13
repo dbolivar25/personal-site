@@ -1,4 +1,4 @@
-export default function Page() {
+export default function HomePage(): JSX.Element {
   return (
     <section>
       <h1 className="mb-8 text-2xl font-semibold tracking-tighter">Welcome</h1>

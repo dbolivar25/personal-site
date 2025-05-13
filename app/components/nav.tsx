@@ -1,6 +1,14 @@
 import Link from "next/link";
 
-const navItems = {
+interface NavItem {
+  path: string;
+}
+
+type NavItems = {
+  [key: string]: NavItem;
+};
+
+const navItems: NavItems = {
   "daniel bolivar": {
     path: "/",
   },
@@ -12,7 +20,7 @@ const navItems = {
   },
 };
 
-export function Navbar() {
+export function Navbar(): JSX.Element {
   return (
     <aside className="-ml-[8px] mb-16 tracking-tight">
       <div className="lg:sticky lg:top-20">

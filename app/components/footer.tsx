@@ -1,4 +1,4 @@
-function ArrowIcon() {
+function ArrowIcon(): JSX.Element {
   return (
     <svg
       width="12"
@@ -15,32 +15,39 @@ function ArrowIcon() {
   );
 }
 
-export default function Footer() {
+interface SocialLink {
+  name: string;
+  href: string;
+}
+
+export default function Footer(): JSX.Element {
+  const socialLinks: SocialLink[] = [
+    {
+      name: "github",
+      href: "https://github.com/dbolivar25",
+    },
+    {
+      name: "linkedin",
+      href: "https://www.linkedin.com/in/daniel-bolivar-3667481ab/",
+    },
+  ];
+
   return (
     <footer className="mb-16">
       <ul className="font-sm mt-8 flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0 dark:text-neutral-300">
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            rel="noopener noreferrer"
-            target="_blank"
-            href="https://github.com/dbolivar25"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">github</p>
-          </a>
-        </li>
-        <li>
-          <a
-            className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-            rel="noopener noreferrer"
-            target="_blank"
-            href="https://www.linkedin.com/in/daniel-bolivar-3667481ab/"
-          >
-            <ArrowIcon />
-            <p className="ml-2 h-7">linkedin</p>
-          </a>
-        </li>
+        {socialLinks.map((link) => (
+          <li key={link.name}>
+            <a
+              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
+              rel="noopener noreferrer"
+              target="_blank"
+              href={link.href}
+            >
+              <ArrowIcon />
+              <p className="ml-2 h-7">{link.name}</p>
+            </a>
+          </li>
+        ))}
       </ul>
       <p className="mt-8 text-neutral-600 dark:text-neutral-300">
         © {new Date().getFullYear()} Daniel Bolivar.

@@ -1,4 +1,4 @@
-export default function NotFound() {
+export default function NotFound(): JSX.Element {
   return (
     <section>
       <h1 className="mb-8 text-2xl font-semibold tracking-tighter">

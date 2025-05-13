@@ -4,10 +4,13 @@ import { formatDate, getProjectBySlug, getProjects, ProjectData } from "app/port
 import { baseUrl } from "app/sitemap";
 import { Metadata } from "next";
 
+import { ResolvingMetadata } from "next";
+
 interface ProjectPageParams {
   params: {
     slug: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -18,7 +21,10 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   }));
 }
 
-export async function generateMetadata({ params }: ProjectPageParams): Promise<Metadata | undefined> {
+export async function generateMetadata(
+  { params }: ProjectPageParams,
+  _parent: ResolvingMetadata
+): Promise<Metadata | undefined> {
   try {
     const { slug } = params;
     const project = getProjectBySlug(slug);
@@ -69,7 +75,7 @@ export async function generateMetadata({ params }: ProjectPageParams): Promise<M
   }
 }
 
-export default function ProjectPage({ params }: ProjectPageParams): JSX.Element {
+export default async function ProjectPage({ params }: { params: { slug: string } }): Promise<JSX.Element> {
   try {
     const { slug } = params;
     const project = getProjectBySlug(slug);
