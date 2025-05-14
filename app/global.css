@@ -26,11 +26,20 @@
   }
   html {
     color-scheme: dark;
+    background-color: black; /* Fallback if starfield fails */
   }
 }
 
 html {
   min-width: 360px;
+  position: relative;
+}
+
+/* Ensure light mode has a white fallback */
+@media (prefers-color-scheme: light) {
+  html {
+    background-color: white; /* Fallback if starfield fails */
+  }
 }
 
 .prose .anchor {
