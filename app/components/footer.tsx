@@ -28,7 +28,7 @@ export default function Footer(): JSX.Element {
     },
     {
       name: "linkedin",
-      href: "https://www.linkedin.com/in/daniel-bolivar-3667481ab/",
+      href: "https://www.linkedin.com/in/danielbolivar25",
     },
   ];
 

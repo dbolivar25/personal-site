@@ -1,8 +1,10 @@
 import { getProjects } from "app/portfolio/utils";
 
-export const baseUrl = "https://danielbolivar.vercel.app";
+export const baseUrl = "https://danielbolivar.dev";
 
-export default async function sitemap(): Promise<{ url: string, lastModified: string | Date }[]> {
+export default async function sitemap(): Promise<
+  { url: string; lastModified: string | Date }[]
+> {
   const projects = getProjects().map((project) => ({
     url: `${baseUrl}/portfolio/${project.slug}`,
     lastModified: project.metadata.publishedAt,
