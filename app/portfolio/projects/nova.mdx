@@ -1,0 +1,41 @@
+---
+title: "Nova Journal"
+publishedAt: "2025-11-26"
+summary:
+  "A full-stack journaling application with AI chat, memory persistence, and
+  weekly insight generation"
+---
+
+## Nova Journal
+
+A journaling application that pairs daily entries with an AI assistant that
+remembers your past conversations and journal content.
+
+### Key Features
+
+- **Daily Journaling**: Rich text editor with automatic date organization and
+  persistent storage
+- **AI Chat**: Conversations that reference your journal entries and maintain
+  history across sessions
+- **Weekly Insights**: AI-generated summaries analyzing patterns and themes from
+  your entries
+- **Streaming Responses**: Server-sent events for token-by-token AI output
+- **User Authentication**: Clerk integration with user-scoped data isolation
+
+### Implementation Details
+
+- **AI Orchestration**: BAML for type-safe, structured interactions with OpenAI
+- **State Management**: TanStack Query for server state caching and background
+  refetching
+- **Database**: Supabase (PostgreSQL) with relational schema linking journals,
+  messages, and summaries
+- **Streaming**: Custom SSE implementation in Next.js API routes
+
+### Technical Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript, TailwindCSS
+- **Backend**: Next.js API Routes, Supabase
+- **AI**: GPT-OSS-120B (via Groq), BAML
+- **Auth**: Clerk
+- **Repository**:
+  [github.com/dbolivar25/nova](https://github.com/dbolivar25/nova)
