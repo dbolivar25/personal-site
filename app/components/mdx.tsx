@@ -172,7 +172,7 @@ export const CustomMarkdown = memo(({ content }: CustomMarkdownProps) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const customComponents: any = {
       div: ({ children }: { children: React.ReactNode }) => (
-        <div className="markdown-content prose dark:prose-invert max-w-none">
+        <div className="markdown-content prose prose-invert max-w-none">
           {children}
         </div>
       ),
