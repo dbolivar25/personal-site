@@ -49,9 +49,6 @@ export default function Footer(): JSX.Element {
           </li>
         ))}
       </ul>
-      <p className="mt-8 text-neutral-300">
-        © {new Date().getFullYear()} Daniel Bolivar.
-      </p>
     </footer>
   );
 }

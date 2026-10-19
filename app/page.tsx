@@ -5,7 +5,7 @@ export default function HomePage(): JSX.Element {
       <p className="mb-4">
         {`
 I'm Daniel Bolivar, AI/ML Software Engineer at Augment AI and Computer Science Alumnus from Vanderbilt.
-I design and build high-performance AI/ML systems powering enterprise applications.
+I build systems powering enterprise applications.
         `}
       </p>
     </section>

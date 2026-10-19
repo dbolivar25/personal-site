@@ -2,7 +2,6 @@ import "./global.css";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Navbar } from "./components/nav";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Footer from "./components/footer";
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
     default: "Home | Daniel Bolivar",
     template: "%s | Daniel Bolivar",
   },
-  description: "My personal site and portfolio.",
+  description: "My personal site.",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Daniel Bolivar",
-    description: "My personal site and portfolio.",
+    description: "My personal site.",
     url: baseUrl,
     siteName: "My Personal Site",
     locale: "en_US",
@@ -83,8 +82,8 @@ export default function RootLayout({
       <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
         {/* The starfield and its fallback are always dark. */}
         <StarfieldShader />
-        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-          <Navbar />
+        {/* Preserve the space previously occupied by the navigation. */}
+        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 pt-[6.5rem] md:px-0">
           {children}
           <Footer />
           <Analytics />
